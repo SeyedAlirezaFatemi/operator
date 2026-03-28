@@ -13,6 +13,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [draggedAgentId, setDraggedAgentId] = useState<string | null>(null);
+  const [draggedPadIndex, setDraggedPadIndex] = useState<number | null>(null);
   const { agents, gateway } = agentsData;
   const [padAssignments, setPadAssignments] = useState<Array<(typeof agents)[number] | null>>(
     () => Array.from({ length: 9 }, () => null),
@@ -36,6 +37,22 @@ export default function Home() {
     );
   }
 
+  function movePadAssignment(fromIndex: number, toIndex: number) {
+    if (fromIndex === toIndex) {
+      return;
+    }
+
+    setPadAssignments((currentAssignments) => {
+      const nextAssignments = [...currentAssignments];
+      const draggedAssignment = nextAssignments[fromIndex];
+
+      nextAssignments[fromIndex] = nextAssignments[toIndex];
+      nextAssignments[toIndex] = draggedAssignment;
+
+      return nextAssignments;
+    });
+  }
+
   return (
     <main className="min-h-screen w-full overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.96),transparent_42%),linear-gradient(180deg,#faf8f7_0%,#f5f3f2_100%)] px-6 py-8 text-[#615f5b] sm:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-stretch justify-center gap-8 lg:gap-12 max-[980px]:min-h-0 max-[980px]:flex-col">
@@ -44,7 +61,10 @@ export default function Home() {
             <Pad
               assignments={padAssignments}
               onAssignAgent={assignAgentToPad}
+              onMoveAssignment={movePadAssignment}
+              onPadDragStateChange={setDraggedPadIndex}
               isDraggingAgent={draggedAgentId !== null}
+              draggedPadIndex={draggedPadIndex}
             />
           </div>
         </div>

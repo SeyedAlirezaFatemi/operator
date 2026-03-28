@@ -34,11 +34,17 @@ const padSlots = Array.from({ length: 9 }, (_, index) => ({
 export function Pad({
   assignments,
   onAssignAgent,
+  onMoveAssignment,
+  onPadDragStateChange,
   isDraggingAgent = false,
+  draggedPadIndex = null,
 }: {
   assignments: Array<AgentAssignment | null>;
   onAssignAgent: (slotIndex: number, agentId: string) => void;
+  onMoveAssignment: (fromIndex: number, toIndex: number) => void;
+  onPadDragStateChange: (slotIndex: number | null) => void;
   isDraggingAgent?: boolean;
+  draggedPadIndex?: number | null;
 }) {
   return (
     <section
@@ -52,7 +58,12 @@ export function Pad({
             label={slot.label}
             assignment={assignments[index]}
             onAssignAgent={(agentId) => onAssignAgent(index, agentId)}
+            onMoveAssignment={(fromIndex) => onMoveAssignment(fromIndex, index)}
+            onPadDragStateChange={onPadDragStateChange}
             isDraggingAgent={isDraggingAgent}
+            slotIndex={index}
+            isDraggingPadItem={draggedPadIndex !== null}
+            isDraggedPadItem={draggedPadIndex === index}
           />
         ))}
       </div>
@@ -75,34 +86,66 @@ function PadButton({
   label,
   assignment,
   onAssignAgent,
+  onMoveAssignment,
+  onPadDragStateChange,
   isDraggingAgent,
+  slotIndex,
+  isDraggingPadItem,
+  isDraggedPadItem,
 }: {
   label: string;
   assignment: AgentAssignment | null;
   onAssignAgent: (agentId: string) => void;
+  onMoveAssignment: (fromIndex: number) => void;
+  onPadDragStateChange: (slotIndex: number | null) => void;
   isDraggingAgent: boolean;
+  slotIndex: number;
+  isDraggingPadItem: boolean;
+  isDraggedPadItem: boolean;
 }) {
   const accent = assignment ? getStatusAccent(assignment.status) : null;
 
   return (
     <button
       aria-label={label}
+      draggable={Boolean(assignment)}
+      onDragStart={(event) => {
+        if (!assignment) {
+          return;
+        }
+
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("application/x-pad-slot", String(slotIndex));
+        onPadDragStateChange(slotIndex);
+      }}
+      onDragEnd={() => onPadDragStateChange(null)}
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
         event.preventDefault();
+        const fromSlotIndex = event.dataTransfer.getData("application/x-pad-slot");
+        if (fromSlotIndex) {
+          onMoveAssignment(Number(fromSlotIndex));
+          onPadDragStateChange(null);
+          return;
+        }
+
         const agentId = event.dataTransfer.getData("text/plain");
         if (agentId) {
           onAssignAgent(agentId);
         }
       }}
       className={[
-        "relative isolate grid h-[5.4rem] w-[5.4rem] place-items-center rounded-[0.95rem] border-2 border-[#373735] p-0 shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.1rem_rgba(255,255,255,0.4),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)] transition-[transform,box-shadow,background-color] duration-200 active:translate-y-px max-[560px]:h-[4.55rem] max-[560px]:w-[4.55rem]",
+        "relative isolate grid h-[5.4rem] w-[5.4rem] place-items-center rounded-[0.95rem] border-2 border-[#373735] p-0 shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.1rem_rgba(255,255,255,0.4),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)] transition-[transform,box-shadow,background-color,opacity] duration-200 active:translate-y-px max-[560px]:h-[4.55rem] max-[560px]:w-[4.55rem]",
         assignment
           ? "bg-[linear-gradient(180deg,#121212,#040404)]"
           : "bg-[linear-gradient(180deg,#6e6e6c,#5b5b59)]",
         !assignment && isDraggingAgent
           ? "scale-[1.03] shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.35rem_rgba(117,227,120,0.26),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)]"
           : "",
+        assignment && isDraggingPadItem && !isDraggedPadItem
+          ? "scale-[1.02] shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.35rem_rgba(87,191,220,0.22),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)]"
+          : "",
+        isDraggedPadItem ? "scale-[1.04] -translate-y-1 opacity-60" : "",
       ].join(" ")}
     >
       <span className="pointer-events-none absolute inset-[0.42rem] rounded-[0.72rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent)] opacity-50" />
@@ -113,6 +156,8 @@ function PadButton({
             ? accent?.ring ?? "border-[rgba(255,255,255,0.2)]"
             : isDraggingAgent
               ? "border-[rgba(117,227,120,0.24)]"
+              : isDraggingPadItem
+                ? "border-[rgba(87,191,220,0.22)]"
               : "border-[rgba(255,255,255,0.2)]",
         ].join(" ")}
       />

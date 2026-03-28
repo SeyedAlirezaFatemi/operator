@@ -22,8 +22,40 @@
       "name": "Dev Agent",
       "description": "Shipping code changes and validating releases",
       "status": "active",
-      "task": "Running tests",
+      "task": "Implementing a feature update",
       "lastActive": "5s ago"
+    },
+    {
+      "id": "refactor-agent",
+      "name": "Refactor Agent",
+      "description": "Improving code structure and simplifying existing implementations",
+      "status": "idle",
+      "task": null,
+      "lastActive": "5s ago"
+    },
+    {
+      "id": "qa-agent",
+      "name": "QA Agent",
+      "description": "Verifying product flows and catching regressions before release",
+      "status": "idle",
+      "task": null,
+      "lastActive": "8 min ago"
+    },
+    {
+      "id": "docs-agent",
+      "name": "Docs Agent",
+      "description": "Writing product documentation, guides, and release notes",
+      "status": "offline",
+      "task": null,
+      "lastActive": "1h ago"
+    },
+    {
+      "id": "design-agent",
+      "name": "Design Agent",
+      "description": "Exploring interface concepts and refining user experience details",
+      "status": "active",
+      "task": "Polishing the dashboard layout",
+      "lastActive": "12s ago"
     },
     {
       "id": "support-agent",
