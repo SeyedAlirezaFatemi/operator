@@ -93,7 +93,7 @@ export function Pad({
   return (
     <section
       aria-label="Application pad mockup"
-      className="flex w-[min(80vw,26rem)] shrink-0 flex-col justify-between rounded-[2.4rem] border border-[rgba(186,182,176,0.9)] bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.45),transparent_62%),radial-gradient(rgba(200,197,192,0.38)_0.7px,transparent_0.8px),linear-gradient(145deg,#f4f3f1,#efeeec)] bg-[length:auto,5px_5px,auto] px-[1.3rem] pt-6 pb-[1.2rem] shadow-[inset_0_2px_3px_rgba(255,255,255,0.88),inset_0_-5px_8px_rgba(151,147,141,0.45),0_0_0_4px_rgba(208,205,200,0.9),0_20px_34px_rgba(170,164,158,0.28)] max-[560px]:w-[min(92vw,22rem)] max-[560px]:rounded-[2rem] max-[560px]:px-[0.95rem] max-[560px]:pt-[1.05rem] max-[560px]:pb-4"
+      className="flex w-[min(70vw,22.25rem)] shrink-0 flex-col justify-between rounded-[2.4rem] border border-[rgba(186,182,176,0.9)] bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.45),transparent_62%),radial-gradient(rgba(200,197,192,0.38)_0.7px,transparent_0.8px),linear-gradient(145deg,#f4f3f1,#efeeec)] bg-[length:auto,5px_5px,auto] px-0 pt-0 pb-[1.2rem] shadow-[inset_0_2px_3px_rgba(255,255,255,0.88),inset_0_-5px_8px_rgba(151,147,141,0.45),0_0_0_4px_rgba(208,205,200,0.9),0_20px_34px_rgba(170,164,158,0.28)] max-[560px]:w-[min(84vw,19.75rem)] max-[560px]:rounded-[2rem] max-[560px]:pb-4"
     >
       <div className="flex flex-col gap-5">
         <PadStatusScreen
@@ -104,7 +104,7 @@ export function Pad({
           isConnected={isConnected}
         />
 
-        <div className="mx-auto grid w-fit grid-cols-3 gap-[0.85rem] max-[560px]:gap-[0.7rem]">
+        <div className="mx-auto grid w-fit grid-cols-3 gap-[0.85rem] px-[1.3rem] max-[560px]:gap-[0.7rem] max-[560px]:px-[0.95rem]">
           {padSlots.map((slot, index) => (
             <PadButton
               key={slot.label}
@@ -122,7 +122,7 @@ export function Pad({
         </div>
       </div>
 
-      <div className="mx-auto mt-[1.2rem] grid w-fit grid-cols-3 items-center gap-x-[0.85rem] max-[560px]:mt-4 max-[560px]:gap-x-[0.7rem]">
+      <div className="mx-auto mt-[1.2rem] grid w-fit grid-cols-3 items-center gap-x-[0.85rem] px-[1.3rem] max-[560px]:mt-4 max-[560px]:gap-x-[0.7rem] max-[560px]:px-[0.95rem]">
         <PadNavButton direction="left" />
         <PadNavButton direction="right" />
         <div
@@ -150,46 +150,40 @@ function PadStatusScreen({
   isConnected: boolean;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[1.4rem] border border-[rgba(255,255,255,0.5)] bg-[linear-gradient(180deg,#151515,#040404)] px-4 pt-4 pb-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-10px_18px_rgba(255,255,255,0.04),0_12px_24px_rgba(87,84,80,0.2)] max-[560px]:rounded-[1.2rem] max-[560px]:px-3 max-[560px]:pt-3">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_30%),linear-gradient(120deg,transparent_18%,rgba(255,255,255,0.12)_45%,transparent_60%),radial-gradient(rgba(255,255,255,0.08)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-50" />
-      <div className="pointer-events-none absolute inset-[0.4rem] rounded-[1.05rem] border border-[rgba(255,255,255,0.08)]" />
+    <div className="relative w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none bg-[linear-gradient(180deg,#131313,#050505)] px-4 pt-3 pb-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:rounded-t-[2rem] max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.08)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.07)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-45" />
 
       <div className="relative">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-[0.62rem] font-semibold tracking-[0.28em] text-[#b1b1b1] uppercase">
-              Pad display
-            </p>
-            <h3 className="mt-1 font-mono text-[1.55rem] leading-none tracking-[-0.03em] text-[#f6f6f2] max-[560px]:text-[1.2rem]">
-              Agents checking
-            </h3>
-          </div>
+          <h3 className="font-mono text-[1.32rem] leading-none tracking-[-0.03em] text-[#f6f6f2] max-[560px]:text-[1rem]">
+            Agent Status
+          </h3>
           <span className="rounded-full border border-[rgba(255,255,255,0.12)] bg-white/6 px-2.5 py-1 font-mono text-[0.62rem] tracking-[0.2em] text-[#d4d4d2] uppercase">
             {isConnected ? gateway : "offline"}
           </span>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 max-[560px]:grid-cols-1">
+        <div className="mt-3 grid grid-cols-2 gap-2.5 max-[560px]:grid-cols-1">
           {agents.length > 0 ? (
             agents.map((agent) => (
               <article
                 key={agent.id}
-                className="rounded-[1rem] border border-[rgba(255,255,255,0.08)] bg-white/4 px-3 py-2.5 backdrop-blur-[1px]"
+                className="rounded-[0.95rem] border border-[rgba(255,255,255,0.08)] bg-white/4 px-3 py-2 backdrop-blur-[1px]"
               >
                 <div className="flex items-start gap-3">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
                     <img
                       src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=${encodeURIComponent(agent.id)}`}
                       alt=""
                       aria-hidden="true"
-                      className="h-7 w-7 object-contain"
+                      className="h-6 w-6 object-contain"
                     />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="truncate font-mono text-[0.95rem] leading-none text-[#f8f8f4]">
+                    <h4 className="truncate font-mono text-[0.88rem] leading-none text-[#f8f8f4]">
                       {agent.name}
                     </h4>
-                    <p className="mt-1 line-clamp-2 font-mono text-[0.68rem] leading-4 text-[#9c9c98]">
+                    <p className="mt-1 line-clamp-2 font-mono text-[0.64rem] leading-3.5 text-[#9c9c98]">
                       {agent.task ?? agent.description}
                     </p>
                   </div>
@@ -203,7 +197,7 @@ function PadStatusScreen({
           )}
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.12)] pt-3 font-mono text-[0.78rem] text-[#f0eee8] max-[560px]:text-[0.72rem]">
+        <div className="mt-3 flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.12)] pt-2.5 font-mono text-[0.72rem] text-[#f0eee8] max-[560px]:text-[0.66rem]">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-[#efb766] shadow-[0_0_10px_rgba(239,183,102,0.65)]" />
             <span>{attentionCount} need attention</span>
