@@ -63,9 +63,12 @@ export default function Home() {
     <main className="min-h-screen w-full overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.96),transparent_42%),linear-gradient(180deg,#faf8f7_0%,#f5f3f2_100%)] px-6 py-8 text-[#615f5b] sm:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-stretch justify-center gap-8 lg:gap-12 max-[980px]:min-h-0 max-[980px]:flex-col">
         <div className="flex flex-1 items-center justify-center max-[980px]:flex-none">
-          <div className="sticky top-1/2 -translate-y-1/2 max-[980px]:static max-[980px]:translate-y-0">
+          <div className="flex items-center justify-center">
             <Pad
               assignments={padAssignments}
+              agents={agents}
+              gateway={gateway}
+              isConnected={isConnected}
               onAssignAgent={assignAgentToPad}
               onMoveAssignment={movePadAssignment}
               onPadDragStateChange={setDraggedPadIndex}

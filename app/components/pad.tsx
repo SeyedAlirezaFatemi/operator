@@ -4,6 +4,12 @@ type AgentAssignment = {
   status: string;
 };
 
+type AgentStatus = AgentAssignment & {
+  description: string;
+  task: string | null;
+  lastActive: string;
+};
+
 function getStatusAccent(status: string) {
   switch (status) {
     case "active":
@@ -59,6 +65,9 @@ const padSlots = Array.from({ length: 9 }, (_, index) => ({
 
 export function Pad({
   assignments,
+  agents,
+  gateway,
+  isConnected,
   onAssignAgent,
   onMoveAssignment,
   onPadDragStateChange,
@@ -66,32 +75,51 @@ export function Pad({
   draggedPadIndex = null,
 }: {
   assignments: Array<AgentAssignment | null>;
+  agents: AgentStatus[];
+  gateway: string;
+  isConnected: boolean;
   onAssignAgent: (slotIndex: number, agentId: string) => void;
   onMoveAssignment: (fromIndex: number, toIndex: number) => void;
   onPadDragStateChange: (slotIndex: number | null) => void;
   isDraggingAgent?: boolean;
   draggedPadIndex?: number | null;
 }) {
+  const activeCount = agents.filter((agent) => agent.status === "active").length;
+  const attentionCount = agents.filter((agent) => agent.status === "error").length;
+  const featuredAgents = agents
+    .filter((agent) => agent.status === "error" || agent.status === "active")
+    .slice(0, 2);
+
   return (
     <section
       aria-label="Application pad mockup"
-      className="flex aspect-square w-[min(76vw,24rem)] shrink-0 flex-col justify-between rounded-[2.4rem] border border-[rgba(186,182,176,0.9)] bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.45),transparent_62%),radial-gradient(rgba(200,197,192,0.38)_0.7px,transparent_0.8px),linear-gradient(145deg,#f4f3f1,#efeeec)] bg-[length:auto,5px_5px,auto] px-[1.3rem] pt-8 pb-[1.2rem] shadow-[inset_0_2px_3px_rgba(255,255,255,0.88),inset_0_-5px_8px_rgba(151,147,141,0.45),0_0_0_4px_rgba(208,205,200,0.9),0_20px_34px_rgba(170,164,158,0.28)] max-[560px]:w-[min(92vw,22rem)] max-[560px]:rounded-[2rem] max-[560px]:px-[0.95rem] max-[560px]:pt-[1.55rem] max-[560px]:pb-4"
+      className="flex w-[min(80vw,26rem)] shrink-0 flex-col justify-between rounded-[2.4rem] border border-[rgba(186,182,176,0.9)] bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.45),transparent_62%),radial-gradient(rgba(200,197,192,0.38)_0.7px,transparent_0.8px),linear-gradient(145deg,#f4f3f1,#efeeec)] bg-[length:auto,5px_5px,auto] px-[1.3rem] pt-6 pb-[1.2rem] shadow-[inset_0_2px_3px_rgba(255,255,255,0.88),inset_0_-5px_8px_rgba(151,147,141,0.45),0_0_0_4px_rgba(208,205,200,0.9),0_20px_34px_rgba(170,164,158,0.28)] max-[560px]:w-[min(92vw,22rem)] max-[560px]:rounded-[2rem] max-[560px]:px-[0.95rem] max-[560px]:pt-[1.05rem] max-[560px]:pb-4"
     >
-      <div className="mx-auto grid w-fit grid-cols-3 gap-[0.85rem] max-[560px]:gap-[0.7rem]">
-        {padSlots.map((slot, index) => (
-          <PadButton
-            key={slot.label}
-            label={slot.label}
-            assignment={assignments[index]}
-            onAssignAgent={(agentId) => onAssignAgent(index, agentId)}
-            onMoveAssignment={(fromIndex) => onMoveAssignment(fromIndex, index)}
-            onPadDragStateChange={onPadDragStateChange}
-            isDraggingAgent={isDraggingAgent}
-            slotIndex={index}
-            isDraggingPadItem={draggedPadIndex !== null}
-            isDraggedPadItem={draggedPadIndex === index}
-          />
-        ))}
+      <div className="flex flex-col gap-5">
+        <PadStatusScreen
+          agents={featuredAgents}
+          activeCount={activeCount}
+          attentionCount={attentionCount}
+          gateway={gateway}
+          isConnected={isConnected}
+        />
+
+        <div className="mx-auto grid w-fit grid-cols-3 gap-[0.85rem] max-[560px]:gap-[0.7rem]">
+          {padSlots.map((slot, index) => (
+            <PadButton
+              key={slot.label}
+              label={slot.label}
+              assignment={assignments[index]}
+              onAssignAgent={(agentId) => onAssignAgent(index, agentId)}
+              onMoveAssignment={(fromIndex) => onMoveAssignment(fromIndex, index)}
+              onPadDragStateChange={onPadDragStateChange}
+              isDraggingAgent={isDraggingAgent}
+              slotIndex={index}
+              isDraggingPadItem={draggedPadIndex !== null}
+              isDraggedPadItem={draggedPadIndex === index}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="mx-auto mt-[1.2rem] grid w-fit grid-cols-3 items-center gap-x-[0.85rem] max-[560px]:mt-4 max-[560px]:gap-x-[0.7rem]">
@@ -105,6 +133,88 @@ export function Pad({
         </div>
       </div>
     </section>
+  );
+}
+
+function PadStatusScreen({
+  agents,
+  activeCount,
+  attentionCount,
+  gateway,
+  isConnected,
+}: {
+  agents: AgentStatus[];
+  activeCount: number;
+  attentionCount: number;
+  gateway: string;
+  isConnected: boolean;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-[1.4rem] border border-[rgba(255,255,255,0.5)] bg-[linear-gradient(180deg,#151515,#040404)] px-4 pt-4 pb-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-10px_18px_rgba(255,255,255,0.04),0_12px_24px_rgba(87,84,80,0.2)] max-[560px]:rounded-[1.2rem] max-[560px]:px-3 max-[560px]:pt-3">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_30%),linear-gradient(120deg,transparent_18%,rgba(255,255,255,0.12)_45%,transparent_60%),radial-gradient(rgba(255,255,255,0.08)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-50" />
+      <div className="pointer-events-none absolute inset-[0.4rem] rounded-[1.05rem] border border-[rgba(255,255,255,0.08)]" />
+
+      <div className="relative">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[0.62rem] font-semibold tracking-[0.28em] text-[#b1b1b1] uppercase">
+              Pad display
+            </p>
+            <h3 className="mt-1 font-mono text-[1.55rem] leading-none tracking-[-0.03em] text-[#f6f6f2] max-[560px]:text-[1.2rem]">
+              Agents checking
+            </h3>
+          </div>
+          <span className="rounded-full border border-[rgba(255,255,255,0.12)] bg-white/6 px-2.5 py-1 font-mono text-[0.62rem] tracking-[0.2em] text-[#d4d4d2] uppercase">
+            {isConnected ? gateway : "offline"}
+          </span>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3 max-[560px]:grid-cols-1">
+          {agents.length > 0 ? (
+            agents.map((agent) => (
+              <article
+                key={agent.id}
+                className="rounded-[1rem] border border-[rgba(255,255,255,0.08)] bg-white/4 px-3 py-2.5 backdrop-blur-[1px]"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
+                    <img
+                      src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=${encodeURIComponent(agent.id)}`}
+                      alt=""
+                      aria-hidden="true"
+                      className="h-7 w-7 object-contain"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="truncate font-mono text-[0.95rem] leading-none text-[#f8f8f4]">
+                      {agent.name}
+                    </h4>
+                    <p className="mt-1 line-clamp-2 font-mono text-[0.68rem] leading-4 text-[#9c9c98]">
+                      {agent.task ?? agent.description}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="col-span-full rounded-[1rem] border border-[rgba(255,255,255,0.08)] bg-white/4 px-3 py-4 font-mono text-[0.74rem] text-[#a7a7a2]">
+              No agents available
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.12)] pt-3 font-mono text-[0.78rem] text-[#f0eee8] max-[560px]:text-[0.72rem]">
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-[#efb766] shadow-[0_0_10px_rgba(239,183,102,0.65)]" />
+            <span>{attentionCount} need attention</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-[#7ce38e] shadow-[0_0_10px_rgba(124,227,142,0.72)]" />
+            <span>{activeCount} agents active</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
