@@ -8,19 +8,45 @@ function getStatusAccent(status: string) {
   switch (status) {
     case "active":
       return {
-        ring: "border-[rgba(117,227,120,0.5)] shadow-[0_0_0.75rem_rgba(117,227,120,0.35)]",
+        ring:
+          "border-[rgba(143,247,166,0.58)] shadow-[0_0_1rem_rgba(107,242,160,0.34),0_0_2rem_rgba(69,201,126,0.2)]",
+        halo:
+          "bg-[radial-gradient(circle_at_50%_50%,rgba(160,255,195,0.34)_0%,rgba(99,233,154,0.18)_42%,transparent_72%)]",
+        aura:
+          "bg-[conic-gradient(from_210deg_at_50%_50%,rgba(255,255,255,0.18),rgba(126,250,178,0.72),rgba(46,181,110,0.3),rgba(255,255,255,0.18))]",
         statusText: "text-[#a6f2bf]",
         idleHint: "rgba(117,227,120,0.24)",
       };
     case "idle":
       return {
-        ring: "border-[rgba(87,191,220,0.5)] shadow-[0_0_0.75rem_rgba(87,191,220,0.32)]",
+        ring:
+          "border-[rgba(125,217,247,0.58)] shadow-[0_0_1rem_rgba(98,205,242,0.32),0_0_2rem_rgba(61,146,214,0.18)]",
+        halo:
+          "bg-[radial-gradient(circle_at_50%_50%,rgba(155,229,255,0.3)_0%,rgba(90,194,238,0.16)_44%,transparent_72%)]",
+        aura:
+          "bg-[conic-gradient(from_205deg_at_50%_50%,rgba(255,255,255,0.16),rgba(122,222,255,0.7),rgba(57,145,214,0.28),rgba(255,255,255,0.16))]",
         statusText: "text-[#9fe7f7]",
         idleHint: "rgba(87,191,220,0.24)",
       };
+    case "error":
+      return {
+        ring:
+          "border-[rgba(255,143,143,0.58)] shadow-[0_0_1rem_rgba(255,116,116,0.34),0_0_2rem_rgba(213,58,58,0.22)]",
+        halo:
+          "bg-[radial-gradient(circle_at_50%_50%,rgba(255,186,186,0.32)_0%,rgba(245,92,92,0.18)_42%,transparent_72%)]",
+        aura:
+          "bg-[conic-gradient(from_210deg_at_50%_50%,rgba(255,255,255,0.16),rgba(255,164,164,0.72),rgba(203,48,48,0.3),rgba(255,255,255,0.16))]",
+        statusText: "text-[#ffb8b8]",
+        idleHint: "rgba(255,116,116,0.24)",
+      };
     default:
       return {
-        ring: "border-[rgba(160,170,180,0.42)] shadow-[0_0_0.65rem_rgba(160,170,180,0.24)]",
+        ring:
+          "border-[rgba(188,196,206,0.46)] shadow-[0_0_0.9rem_rgba(181,188,198,0.2),0_0_1.6rem_rgba(117,123,136,0.14)]",
+        halo:
+          "bg-[radial-gradient(circle_at_50%_50%,rgba(220,225,232,0.18)_0%,rgba(160,170,180,0.12)_46%,transparent_74%)]",
+        aura:
+          "bg-[conic-gradient(from_220deg_at_50%_50%,rgba(255,255,255,0.14),rgba(214,221,229,0.44),rgba(131,140,151,0.18),rgba(255,255,255,0.14))]",
         statusText: "text-[#d7dce2]",
         idleHint: "rgba(255,255,255,0.2)",
       };
@@ -148,6 +174,22 @@ function PadButton({
         isDraggedPadItem ? "scale-[1.04] -translate-y-1 opacity-60" : "",
       ].join(" ")}
     >
+      {assignment ? (
+        <>
+          <span
+            className={[
+              "pointer-events-none absolute -inset-[0.52rem] rounded-[1.32rem] opacity-90 blur-[0.42rem]",
+              accent?.halo,
+            ].join(" ")}
+          />
+          <span
+            className={[
+              "pointer-events-none absolute -inset-[0.28rem] rounded-[1.12rem] opacity-80",
+              accent?.aura,
+            ].join(" ")}
+          />
+        </>
+      ) : null}
       <span className="pointer-events-none absolute inset-[0.42rem] rounded-[0.72rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent)] opacity-50" />
       <span
         className={[
@@ -161,6 +203,9 @@ function PadButton({
               : "border-[rgba(255,255,255,0.2)]",
         ].join(" ")}
       />
+      {assignment ? (
+        <span className="pointer-events-none absolute inset-[0.08rem] rounded-[0.98rem] bg-[linear-gradient(145deg,rgba(255,255,255,0.18),transparent_28%,transparent_72%,rgba(255,255,255,0.08))] opacity-80" />
+      ) : null}
       {assignment ? (
         <span className="absolute inset-[0.42rem] overflow-hidden rounded-[0.72rem]">
           <img

@@ -152,6 +152,8 @@ export default function Home() {
                                 ? "bg-[#dff6e8] text-[#1f8b57]"
                                 : agent.status === "idle"
                                   ? "bg-[#eef5ff] text-[#4577d4]"
+                                  : agent.status === "error"
+                                    ? "bg-[#ffe7e7] text-[#c53b3b]"
                                   : "bg-[#eceff2] text-[#6d7782]",
                             ].join(" ")}
                           >

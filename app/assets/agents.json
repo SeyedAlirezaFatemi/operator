@@ -37,16 +37,16 @@
       "id": "qa-agent",
       "name": "QA Agent",
       "description": "Verifying product flows and catching regressions before release",
-      "status": "idle",
-      "task": null,
+      "status": "error",
+      "task": "Regression suite failed on checkout flow",
       "lastActive": "8 min ago"
     },
     {
       "id": "docs-agent",
       "name": "Docs Agent",
       "description": "Writing product documentation, guides, and release notes",
-      "status": "offline",
-      "task": null,
+      "status": "error",
+      "task": "Sync blocked by missing release metadata",
       "lastActive": "1h ago"
     },
     {
