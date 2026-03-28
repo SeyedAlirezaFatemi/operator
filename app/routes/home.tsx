@@ -51,16 +51,26 @@ export default function Home() {
 
         <section
           aria-label={isConnected ? "OpenClaw agents panel" : "OpenClaw connection panel"}
-          className="relative h-[calc(100vh-4rem)] w-full max-w-[28rem] overflow-hidden rounded-[2rem] border border-[rgba(31,50,64,0.12)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(242,247,249,0.96))] p-6 shadow-[0_24px_60px_rgba(81,104,114,0.16),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur md:p-7 max-[980px]:h-auto max-[980px]:max-h-none"
+          className={[
+            "relative w-full max-w-[28rem] overflow-visible rounded-[2rem] border border-[rgba(31,50,64,0.12)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(242,247,249,0.96))] p-6 shadow-[0_24px_60px_rgba(81,104,114,0.16),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur md:p-7 max-[980px]:h-auto max-[980px]:max-h-none",
+            isConnected ? "h-[calc(100vh-4rem)]" : "max-w-[26rem] self-center pb-10",
+          ].join(" ")}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(72,191,227,0.18),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.14),transparent_26%)]" />
-          <div className="relative h-full overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[980px]:h-auto">
+          <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_top_right,rgba(72,191,227,0.18),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.14),transparent_26%)]" />
+          <div
+            className={[
+              "relative py-3",
+              isConnected
+                ? "-mx-4 h-full overflow-y-auto px-7 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[980px]:mx-0 max-[980px]:px-0 max-[980px]:h-auto"
+                : "px-3",
+            ].join(" ")}
+          >
             <div className="mb-6 flex items-center gap-4">
               <div className="grid h-16 w-16 place-items-center rounded-[1.35rem] bg-[linear-gradient(180deg,#0f1d25,#163748)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_28px_rgba(15,29,37,0.22)]">
                 <img
                   src="/openclaw.png"
                   alt="OpenClaw logo"
-                  className="h-10 w-10 object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.28)]"
+                  className="h-10 w-10 object-contain opacity-95"
                 />
               </div>
               <div>
