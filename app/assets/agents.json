@@ -1,0 +1,37 @@
+{
+  "gateway": "connected",
+  "agents": [
+    {
+      "id": "sales-agent",
+      "name": "Sales Agent",
+      "description": "Prospecting qualified leads and warming up new accounts",
+      "status": "active",
+      "task": "Sending outreach emails",
+      "lastActive": "2s ago"
+    },
+    {
+      "id": "research-agent",
+      "name": "Research Agent",
+      "description": "Collecting market context and summarizing competitive signals",
+      "status": "idle",
+      "task": null,
+      "lastActive": "3 min ago"
+    },
+    {
+      "id": "dev-agent",
+      "name": "Dev Agent",
+      "description": "Shipping code changes and validating releases",
+      "status": "active",
+      "task": "Running tests",
+      "lastActive": "5s ago"
+    },
+    {
+      "id": "support-agent",
+      "name": "Support Agent",
+      "description": "Monitoring incoming tickets and preparing customer responses",
+      "status": "offline",
+      "task": null,
+      "lastActive": "2h ago"
+    }
+  ]
+}
