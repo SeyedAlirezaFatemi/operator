@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { BellOff, FileText, Pause, Power } from "lucide-react";
@@ -284,7 +285,7 @@ function PadStatusScreen({
 }) {
   if (!isConnected) {
     return (
-      <div className={[padScreenShellClass, "bg-[linear-gradient(180deg,#111111,#040404)]"].join(" ")}>
+      <div className={clsx(padScreenShellClass, "bg-[linear-gradient(180deg,#111111,#040404)]")}>
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.05)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.05)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-35" />
         <div className="relative h-full" />
       </div>
@@ -296,17 +297,17 @@ function PadStatusScreen({
 
     return (
       <div
-        className={[
+        className={clsx(
           padScreenShellClass,
           "bg-[linear-gradient(180deg,#151515,#060606)] px-4 pt-3 pb-2.5 text-white max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2",
-        ].join(" ")}
+        )}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.08)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.07)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-45" />
         <div
-          className={[
+          className={clsx(
             "pointer-events-none absolute inset-[1px] rounded-t-[calc(2.4rem-1px)] rounded-b-none border-2 max-[560px]:rounded-t-[calc(2rem-1px)]",
             accent.screenBorder,
-          ].join(" ")}
+          )}
         />
         <div className="relative flex h-full flex-col justify-between">
           <div className="flex items-start gap-3">
@@ -343,10 +344,10 @@ function PadStatusScreen({
 
   return (
     <div
-      className={[
+      className={clsx(
         padScreenShellClass,
         "bg-[linear-gradient(180deg,#131313,#050505)] px-4 pt-3 pb-2.5 text-white max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2",
-      ].join(" ")}
+      )}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.08)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.07)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-45" />
 
@@ -362,10 +363,13 @@ function PadStatusScreen({
 
         <div className="mt-3 grid grid-cols-2 gap-2.5 max-[560px]:grid-cols-1">
           {agents.length > 0 ? (
-            agents.map((agent) => (
+            agents.map((agent, index) => (
               <article
                 key={agent.id}
-                className="rounded-[0.95rem] border border-[rgba(255,255,255,0.08)] bg-white/4 px-3 py-2 backdrop-blur-[1px]"
+                className={clsx(
+                  "rounded-[0.95rem] border border-[rgba(255,255,255,0.08)] bg-white/4 px-3 py-2 backdrop-blur-[1px]",
+                  index > 0 && "max-[560px]:hidden",
+                )}
               >
                 <div className="flex items-start gap-3">
                   <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
@@ -482,7 +486,7 @@ function PadButton({
           onAssignAgent(agentId);
         }
       }}
-      className={[
+      className={clsx(
         "relative isolate grid h-[5.4rem] w-[5.4rem] place-items-center rounded-[0.95rem] border-2 border-[#373735] p-0 shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.1rem_rgba(255,255,255,0.4),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)] transition-[transform,box-shadow,background-color,opacity] duration-200 active:translate-y-px max-[560px]:h-[4.55rem] max-[560px]:w-[4.55rem]",
         isActionButton
           ? "bg-[linear-gradient(180deg,#1a1a19,#0c0c0b)]"
@@ -499,27 +503,27 @@ function PadButton({
           : "",
         isDraggedPadItem ? "scale-[1.04] -translate-y-1 opacity-60" : "",
         isSelected ? "scale-[1.02]" : "",
-      ].join(" ")}
+      )}
     >
       {assignment && !isActionButton ? (
         <>
           <span
-            className={[
+            className={clsx(
               "pointer-events-none absolute -inset-[0.52rem] rounded-[1.32rem] opacity-90 blur-[0.42rem]",
               accent?.halo,
-            ].join(" ")}
+            )}
           />
           <span
-            className={[
+            className={clsx(
               "pointer-events-none absolute -inset-[0.28rem] rounded-[1.12rem] opacity-80",
               accent?.aura,
-            ].join(" ")}
+            )}
           />
         </>
       ) : null}
       <span className="pointer-events-none absolute inset-[0.42rem] rounded-[0.72rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent)] opacity-50" />
       <span
-        className={[
+        className={clsx(
           "pointer-events-none absolute -inset-[0.18rem] rounded-[1.08rem] border-[0.16rem] transition",
           assignment
             ? accent?.ring ?? "border-[rgba(255,255,255,0.2)]"
@@ -529,7 +533,7 @@ function PadButton({
                 ? "border-[rgba(87,191,220,0.22)]"
               : "border-[rgba(255,255,255,0.2)]",
           isSelected ? "opacity-100" : "",
-        ].join(" ")}
+        )}
       />
       {assignment && !isActionButton ? (
         <span className="pointer-events-none absolute inset-[0.08rem] rounded-[0.98rem] bg-[linear-gradient(145deg,rgba(255,255,255,0.18),transparent_28%,transparent_72%,rgba(255,255,255,0.08))] opacity-80" />
@@ -563,10 +567,10 @@ function PadButton({
             {assignment.name}
           </span>
           <span
-            className={[
+            className={clsx(
               "text-[0.42rem] font-semibold tracking-[0.18em] uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] max-[560px]:text-[0.38rem]",
               accent?.statusText ?? "text-[#d7dce2]",
-            ].join(" ")}
+            )}
           >
             {assignment.status}
           </span>

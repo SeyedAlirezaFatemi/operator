@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useState } from "react";
 import type { Route } from "./+types/home";
 import agentsData from "../assets/agents.json";
@@ -85,19 +86,19 @@ export default function Home() {
 
         <section
           aria-label={isConnected ? "OpenClaw agents panel" : "OpenClaw connection panel"}
-          className={[
+          className={clsx(
             "relative w-full max-w-[28rem] overflow-visible rounded-[2rem] border border-[rgba(31,50,64,0.12)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(242,247,249,0.96))] p-6 shadow-[0_24px_60px_rgba(81,104,114,0.16),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur md:p-7 max-[980px]:h-auto max-[980px]:max-h-none",
             isConnected ? "h-[calc(100vh-4rem)]" : "max-w-[26rem] self-center pb-10",
-          ].join(" ")}
+          )}
         >
           <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_top_right,rgba(72,191,227,0.18),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.14),transparent_26%)]" />
           <div
-            className={[
+            className={clsx(
               "relative py-3",
               isConnected
                 ? "-mx-4 h-full overflow-y-auto px-7 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[980px]:mx-0 max-[980px]:px-0 max-[980px]:h-auto"
                 : "px-3",
-            ].join(" ")}
+            )}
           >
             <div className="mb-6 flex items-center gap-4">
               <div className="grid h-16 w-16 place-items-center rounded-[1.35rem] bg-[linear-gradient(180deg,#0f1d25,#163748)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_28px_rgba(15,29,37,0.22)]">
@@ -140,7 +141,7 @@ export default function Home() {
                 </div>
 
                 <div className="mt-5 space-y-3 pb-10">
-                  {agents.map((agent) => (
+                  {agents.map((agent, index) => (
                     <article
                       key={agent.id}
                       draggable
@@ -150,12 +151,13 @@ export default function Home() {
                         setDraggedAgentId(agent.id);
                       }}
                       onDragEnd={() => setDraggedAgentId(null)}
-                      className={[
+                      className={clsx(
                         "cursor-grab rounded-[1.25rem] border border-[rgba(86,125,136,0.15)] bg-white/72 px-4 py-4 shadow-[0_10px_24px_rgba(121,150,160,0.12),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[transform,box-shadow,opacity] duration-200 active:cursor-grabbing",
+                        index > 0 && "max-[640px]:hidden",
                         draggedAgentId === agent.id
                           ? "scale-[1.03] -translate-y-1 opacity-60 shadow-[0_18px_30px_rgba(72,191,227,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
                           : "hover:-translate-y-0.5",
-                      ].join(" ")}
+                      )}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3">
@@ -173,7 +175,7 @@ export default function Home() {
                         </div>
                         <div className="flex shrink-0 flex-col items-center gap-2">
                           <span
-                            className={[
+                            className={clsx(
                               "rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.18em] uppercase",
                               agent.status === "active"
                                 ? "bg-[#dff6e8] text-[#1f8b57]"
@@ -182,7 +184,7 @@ export default function Home() {
                                   : agent.status === "error"
                                     ? "bg-[#ffe7e7] text-[#c53b3b]"
                                   : "bg-[#eceff2] text-[#6d7782]",
-                            ].join(" ")}
+                            )}
                           >
                             {agent.status}
                           </span>
