@@ -102,7 +102,7 @@ export default function Home() {
             <div className="mb-6 flex items-center gap-4">
               <div className="grid h-16 w-16 place-items-center rounded-[1.35rem] bg-[linear-gradient(180deg,#0f1d25,#163748)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_28px_rgba(15,29,37,0.22)]">
                 <img
-                  src="/openclaw.png"
+                  src={`${import.meta.env.BASE_URL}openclaw.png`}
                   alt="OpenClaw logo"
                   className="h-10 w-10 object-contain opacity-95"
                 />
@@ -221,7 +221,12 @@ export default function Home() {
                   onClick={connectOpenClaw}
                   className="mt-5 inline-flex w-full items-center justify-center gap-3 rounded-[1.2rem] bg-[linear-gradient(135deg,#163748,#1f5568_55%,#2f8ca7)] px-5 py-4 text-base font-semibold text-white shadow-[0_18px_30px_rgba(28,83,101,0.28),inset_0_1px_0_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_36px_rgba(28,83,101,0.34),inset_0_1px_0_rgba(255,255,255,0.16)] active:translate-y-0"
                 >
-                  <img src="/openclaw.png" alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
+                  <img
+                    src={`${import.meta.env.BASE_URL}openclaw.png`}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-5 w-5 object-contain"
+                  />
                   <span>Connect OpenClaw</span>
                 </button>
                 <p className="mt-3 text-center text-sm text-[#5f727a]">
