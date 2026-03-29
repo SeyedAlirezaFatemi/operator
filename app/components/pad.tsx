@@ -1,4 +1,6 @@
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { BellOff, FileText, Pause, Power } from "lucide-react";
 
 type AgentAssignment = {
   id: string;
@@ -10,6 +12,14 @@ type AgentStatus = AgentAssignment & {
   description: string;
   task: string | null;
   lastActive: string;
+};
+
+type AgentAction = {
+  id: string;
+  label: string;
+  shortLabel: string;
+  icon: LucideIcon;
+  detail: (agentName: string) => string;
 };
 
 function getStatusAccent(status: string) {
@@ -83,9 +93,41 @@ function getAgentStatusSentence(agent: AgentStatus) {
   }
 }
 
+const agentActions: AgentAction[] = [
+  {
+    id: "shutdown",
+    label: "Shut down",
+    shortLabel: "Shutdown",
+    icon: Power,
+    detail: (agentName) => `${agentName} is shutting down and closing active work.`,
+  },
+  {
+    id: "pause",
+    label: "Pause",
+    shortLabel: "Pause",
+    icon: Pause,
+    detail: (agentName) => `${agentName} is paused and waiting for resume input.`,
+  },
+  {
+    id: "summarize-context",
+    label: "Summarise context",
+    shortLabel: "Summarise",
+    icon: FileText,
+    detail: (agentName) => `${agentName} is summarising the current working context.`,
+  },
+  {
+    id: "mute",
+    label: "Mute / DND",
+    shortLabel: "Mute",
+    icon: BellOff,
+    detail: (agentName) => `${agentName} notifications are muted until do not disturb is cleared.`,
+  },
+];
+
 const padSlots = Array.from({ length: 9 }, (_, index) => ({
   label: `Pad slot ${index + 1}`,
 }));
+const focusedActionSlots = [4, 6, 7, 8];
 
 const padScreenShellClass =
   "relative h-[10.5rem] w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:h-[8.8rem] max-[560px]:rounded-t-[2rem]";
@@ -112,6 +154,7 @@ export function Pad({
   draggedPadIndex?: number | null;
 }) {
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [lastActionByAgentId, setLastActionByAgentId] = useState<Record<string, string>>({});
   const activeCount = agents.filter((agent) => agent.status === "active").length;
   const attentionCount = agents.filter((agent) => agent.status === "error").length;
   const featuredAgents = agents
@@ -121,6 +164,29 @@ export function Pad({
     assignments.find((assignment) => assignment?.id === selectedAgentId)
       ? agents.find((agent) => agent.id === selectedAgentId) ?? null
       : null;
+  const selectedAgentAction = selectedAgent ? lastActionByAgentId[selectedAgent.id] ?? null : null;
+  const visiblePadItems = selectedAgent
+    ? padSlots.map((slot, index) => ({
+        slot,
+        slotIndex: index,
+        assignment: index === 0 ? selectedAgent : null,
+        action:
+          index === 0
+            ? null
+            : focusedActionSlots.includes(index)
+              ? agentActions[focusedActionSlots.indexOf(index)] ?? null
+              : null,
+        isSelected: index === 0,
+        isFocusMode: true,
+      }))
+    : padSlots.map((slot, index) => ({
+        slot,
+        slotIndex: index,
+        assignment: assignments[index],
+        action: null,
+        isSelected: selectedAgentId === assignments[index]?.id,
+        isFocusMode: false,
+      }));
 
   return (
     <section
@@ -135,24 +201,39 @@ export function Pad({
           gateway={gateway}
           isConnected={isConnected}
           selectedAgent={selectedAgent}
+          selectedAgentAction={selectedAgentAction}
         />
 
         <div className="mx-auto grid w-fit grid-cols-3 gap-[0.85rem] px-[1.3rem] max-[560px]:gap-[0.7rem] max-[560px]:px-[0.95rem]">
-          {padSlots.map((slot, index) => (
+          {visiblePadItems.map(({ slot, slotIndex, assignment, action, isSelected, isFocusMode }) => (
             <PadButton
               key={slot.label}
               label={slot.label}
-              assignment={assignments[index]}
-              onAssignAgent={(agentId) => onAssignAgent(index, agentId)}
-              onMoveAssignment={(fromIndex) => onMoveAssignment(fromIndex, index)}
+              assignment={assignment}
+              action={action}
+              onAssignAgent={(agentId) => onAssignAgent(slotIndex, agentId)}
+              onMoveAssignment={(fromIndex) => onMoveAssignment(fromIndex, slotIndex)}
               onPadDragStateChange={onPadDragStateChange}
               isDraggingAgent={isDraggingAgent}
-              slotIndex={index}
+              slotIndex={slotIndex}
               isDraggingPadItem={draggedPadIndex !== null}
-              isDraggedPadItem={draggedPadIndex === index}
-              isSelected={selectedAgentId === assignments[index]?.id}
+              isDraggedPadItem={draggedPadIndex === slotIndex}
+              isSelected={isSelected}
+              isFocusMode={isFocusMode}
               onPress={() => {
-                const nextAssignment = assignments[index];
+                if (action && selectedAgent) {
+                  setLastActionByAgentId((currentActions) => ({
+                    ...currentActions,
+                    [selectedAgent.id]: action.detail(selectedAgent.name),
+                  }));
+                  return;
+                }
+
+                if (isFocusMode && !isSelected) {
+                  return;
+                }
+
+                const nextAssignment = selectedAgent ?? assignment;
                 if (!nextAssignment) {
                   return;
                 }
@@ -191,6 +272,7 @@ function PadStatusScreen({
   gateway,
   isConnected,
   selectedAgent,
+  selectedAgentAction,
 }: {
   agents: AgentStatus[];
   activeCount: number;
@@ -198,6 +280,7 @@ function PadStatusScreen({
   gateway: string;
   isConnected: boolean;
   selectedAgent: AgentStatus | null;
+  selectedAgentAction: string | null;
 }) {
   if (!isConnected) {
     return (
@@ -246,12 +329,12 @@ function PadStatusScreen({
           </div>
 
           <p className="max-w-[92%] font-mono text-[0.84rem] leading-5 text-[#e7e7e2] max-[560px]:max-w-full max-[560px]:text-[0.68rem] max-[560px]:leading-4.5">
-            {getAgentStatusSentence(selectedAgent)}
+            {selectedAgentAction ?? getAgentStatusSentence(selectedAgent)}
           </p>
 
           <div className="flex items-center justify-between gap-3 border-t border-white/12 pt-2 font-mono text-[0.62rem] tracking-[0.14em] text-[#b8b8b3] uppercase max-[560px]:text-[0.55rem]">
             <span>{selectedAgent.status}</span>
-            <span>Tap again to return home</span>
+            <span>Tap on agent to return home</span>
           </div>
         </div>
       </div>
@@ -329,7 +412,9 @@ function PadStatusScreen({
 function PadButton({
   label,
   assignment,
+  action,
   isSelected,
+  isFocusMode,
   onPress,
   onAssignAgent,
   onMoveAssignment,
@@ -341,7 +426,9 @@ function PadButton({
 }: {
   label: string;
   assignment: AgentAssignment | null;
+  action: AgentAction | null;
   isSelected: boolean;
+  isFocusMode: boolean;
   onPress: () => void;
   onAssignAgent: (agentId: string) => void;
   onMoveAssignment: (fromIndex: number) => void;
@@ -352,14 +439,16 @@ function PadButton({
   isDraggedPadItem: boolean;
 }) {
   const accent = assignment ? getStatusAccent(assignment.status) : null;
+  const isActionButton = action !== null;
+  const ActionIcon = action?.icon;
 
   return (
     <button
-      aria-label={label}
-      draggable={Boolean(assignment)}
+      aria-label={action?.label ?? label}
+      draggable={Boolean(assignment) && !isActionButton && !isFocusMode}
       onClick={onPress}
       onDragStart={(event) => {
-        if (!assignment) {
+        if (!assignment || isActionButton || isFocusMode) {
           return;
         }
 
@@ -368,8 +457,18 @@ function PadButton({
         onPadDragStateChange(slotIndex);
       }}
       onDragEnd={() => onPadDragStateChange(null)}
-      onDragOver={(event) => event.preventDefault()}
+      onDragOver={(event) => {
+        if (isActionButton || isFocusMode) {
+          return;
+        }
+
+        event.preventDefault();
+      }}
       onDrop={(event) => {
+        if (isActionButton || isFocusMode) {
+          return;
+        }
+
         event.preventDefault();
         const fromSlotIndex = event.dataTransfer.getData("application/x-pad-slot");
         if (fromSlotIndex) {
@@ -385,9 +484,13 @@ function PadButton({
       }}
       className={[
         "relative isolate grid h-[5.4rem] w-[5.4rem] place-items-center rounded-[0.95rem] border-2 border-[#373735] p-0 shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.1rem_rgba(255,255,255,0.4),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)] transition-[transform,box-shadow,background-color,opacity] duration-200 active:translate-y-px max-[560px]:h-[4.55rem] max-[560px]:w-[4.55rem]",
-        assignment
-          ? "bg-[linear-gradient(180deg,#121212,#040404)]"
-          : "bg-[linear-gradient(180deg,#6e6e6c,#5b5b59)]",
+        isActionButton
+          ? "bg-[linear-gradient(180deg,#1a1a19,#0c0c0b)]"
+          : assignment
+            ? "bg-[linear-gradient(180deg,#121212,#040404)]"
+            : isFocusMode
+              ? "bg-[linear-gradient(180deg,#565654,#494947)] opacity-55"
+              : "bg-[linear-gradient(180deg,#6e6e6c,#5b5b59)]",
         !assignment && isDraggingAgent
           ? "scale-[1.03] shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.35rem_rgba(117,227,120,0.26),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)]"
           : "",
@@ -398,7 +501,7 @@ function PadButton({
         isSelected ? "scale-[1.02]" : "",
       ].join(" ")}
     >
-      {assignment ? (
+      {assignment && !isActionButton ? (
         <>
           <span
             className={[
@@ -428,10 +531,10 @@ function PadButton({
           isSelected ? "opacity-100" : "",
         ].join(" ")}
       />
-      {assignment ? (
+      {assignment && !isActionButton ? (
         <span className="pointer-events-none absolute inset-[0.08rem] rounded-[0.98rem] bg-[linear-gradient(145deg,rgba(255,255,255,0.18),transparent_28%,transparent_72%,rgba(255,255,255,0.08))] opacity-80" />
       ) : null}
-      {assignment ? (
+      {assignment && !isActionButton ? (
         <span className="absolute inset-[0.42rem] overflow-hidden rounded-[0.72rem]">
           <img
             src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=${encodeURIComponent(assignment.id)}`}
@@ -441,7 +544,20 @@ function PadButton({
           <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,8,10,0.08),rgba(6,8,10,0.22)_45%,rgba(6,8,10,0.78))]" />
         </span>
       ) : null}
-      {assignment ? (
+      {isActionButton ? (
+        <span className="relative z-10 flex h-full w-full flex-col items-center justify-center px-2 text-center">
+          {ActionIcon ? (
+            <ActionIcon
+              aria-hidden="true"
+              className="mb-1.5 h-4.5 w-4.5 text-[#f0efe8] drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] max-[560px]:mb-1 max-[560px]:h-4 max-[560px]:w-4"
+              strokeWidth={2.1}
+            />
+          ) : null}
+          <span className="text-[0.58rem] leading-3 font-semibold tracking-[0.14em] text-[#f0efe8] uppercase max-[560px]:text-[0.5rem]">
+            {action.shortLabel}
+          </span>
+        </span>
+      ) : assignment ? (
         <span className="relative z-10 flex h-full w-full flex-col items-center justify-between px-2 pt-2 pb-1.5 text-center">
           <span className="line-clamp-2 text-[0.72rem] leading-3.5 font-semibold tracking-[0.03em] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] max-[560px]:text-[0.62rem]">
             {assignment.name}
