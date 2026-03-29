@@ -87,7 +87,7 @@ export default function Home() {
         <section
           aria-label={isConnected ? "OpenClaw agents panel" : "OpenClaw connection panel"}
           className={clsx(
-            "relative w-full max-w-[28rem] overflow-visible rounded-[2rem] border border-[rgba(31,50,64,0.12)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(242,247,249,0.96))] p-6 shadow-[0_24px_60px_rgba(81,104,114,0.16),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur md:p-7 max-[980px]:h-auto max-[980px]:max-h-none",
+            "relative w-full max-w-[28rem] overflow-visible rounded-[2rem] border border-[rgba(31,50,64,0.12)] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(242,247,249,0.96))] p-6 shadow-[0_24px_60px_rgba(81,104,114,0.16),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur md:p-7 max-[980px]:h-auto max-[980px]:max-h-none max-[980px]:self-center",
             isConnected ? "h-[calc(100vh-4rem)]" : "max-w-[26rem] self-center pb-10",
           )}
         >
