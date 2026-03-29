@@ -149,6 +149,15 @@ function PadStatusScreen({
   gateway: string;
   isConnected: boolean;
 }) {
+  if (!isConnected) {
+    return (
+      <div className="relative w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none bg-[linear-gradient(180deg,#111111,#040404)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:rounded-t-[2rem]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.05)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.05)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-35" />
+        <div className="relative h-[10.5rem] max-[560px]:h-[8.8rem]" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none bg-[linear-gradient(180deg,#131313,#050505)] px-4 pt-3 pb-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:rounded-t-[2rem] max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.08)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.07)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-45" />

@@ -59,6 +59,11 @@ export default function Home() {
     );
   }
 
+  function connectOpenClaw() {
+    insertAllAgents();
+    setIsConnected(true);
+  }
+
   return (
     <main className="min-h-screen w-full overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.96),transparent_42%),linear-gradient(180deg,#faf8f7_0%,#f5f3f2_100%)] px-6 py-8 text-[#615f5b] sm:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-stretch justify-center gap-8 lg:gap-12 max-[980px]:min-h-0 max-[980px]:flex-col">
@@ -213,7 +218,7 @@ export default function Home() {
 
                 <button
                   type="button"
-                  onClick={() => setIsConnected(true)}
+                  onClick={connectOpenClaw}
                   className="mt-5 inline-flex w-full items-center justify-center gap-3 rounded-[1.2rem] bg-[linear-gradient(135deg,#163748,#1f5568_55%,#2f8ca7)] px-5 py-4 text-base font-semibold text-white shadow-[0_18px_30px_rgba(28,83,101,0.28),inset_0_1px_0_rgba(255,255,255,0.16)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_36px_rgba(28,83,101,0.34),inset_0_1px_0_rgba(255,255,255,0.16)] active:translate-y-0"
                 >
                   <img src="/openclaw.png" alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
