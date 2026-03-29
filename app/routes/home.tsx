@@ -224,6 +224,9 @@ export default function Home() {
                   <img src="/openclaw.png" alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
                   <span>Connect OpenClaw</span>
                 </button>
+                <p className="mt-3 text-center text-sm text-[#5f727a]">
+                  Demo: No need for a URL, just press connect!
+                </p>
               </>
             )}
           </div>

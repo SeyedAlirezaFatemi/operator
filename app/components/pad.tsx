@@ -247,7 +247,7 @@ export function Pad({
         </div>
       </div>
 
-      <div className="mx-auto mt-[1.2rem] grid w-full max-w-[17.6rem] grid-cols-[1fr_auto_1fr] items-center px-[1.3rem] max-[560px]:mt-4 max-[560px]:max-w-[14.9rem] max-[560px]:px-[0.95rem]">
+      <div className="mx-auto mt-[1.2rem] grid w-fit min-w-[17.9rem] grid-cols-[1fr_auto_1fr] items-center max-[560px]:mt-4 max-[560px]:min-w-[15.05rem]">
         <div className="justify-self-start">
           <PadNavButton direction="left" />
         </div>
