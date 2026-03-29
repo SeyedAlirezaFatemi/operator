@@ -122,14 +122,18 @@ export function Pad({
         </div>
       </div>
 
-      <div className="mx-auto mt-[1.2rem] grid w-fit grid-cols-3 items-center gap-x-[0.85rem] px-[1.3rem] max-[560px]:mt-4 max-[560px]:gap-x-[0.7rem] max-[560px]:px-[0.95rem]">
-        <PadNavButton direction="left" />
-        <PadNavButton direction="right" />
+      <div className="mx-auto mt-[1.2rem] grid w-full max-w-[17.6rem] grid-cols-[1fr_auto_1fr] items-center px-[1.3rem] max-[560px]:mt-4 max-[560px]:max-w-[14.9rem] max-[560px]:px-[0.95rem]">
+        <div className="justify-self-start">
+          <PadNavButton direction="left" />
+        </div>
         <div
           aria-label="Logi brand"
-          className="min-w-0 justify-self-center text-[2rem] leading-none font-semibold tracking-[-0.08rem] text-[#a7a39e] lowercase [text-shadow:0_1px_0_rgba(255,255,255,0.7)] max-[560px]:text-[1.7rem]"
+          className="min-w-0 justify-self-center text-[1.8rem] leading-none font-semibold tracking-[-0.08rem] text-[#a7a39e] lowercase [text-shadow:0_1px_0_rgba(255,255,255,0.7)] max-[560px]:text-[1.55rem]"
         >
           logi
+        </div>
+        <div className="justify-self-end">
+          <PadNavButton direction="right" />
         </div>
       </div>
     </section>
@@ -352,7 +356,7 @@ function PadNavButton({ direction }: { direction: "left" | "right" }) {
   return (
     <button
       aria-label={direction === "left" ? "Previous page" : "Next page"}
-      className="h-[3.55rem] w-full rounded-[1.05rem_1.05rem_1.25rem_1.25rem] border-2 border-[#9d9a95] bg-[linear-gradient(180deg,#faf8f6,#f3f0ed)] p-0 text-[2rem] leading-none text-[#9a9894] shadow-[0_0_0_0.24rem_rgba(255,255,255,0.78),0_0_1rem_rgba(255,255,255,0.46),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-6px_8px_rgba(176,169,161,0.22),0_1px_2px_rgba(0,0,0,0.14)] transition-transform active:translate-y-px max-[560px]:h-[3.1rem]"
+      className="h-[3.4rem] w-[4.15rem] rounded-[1.05rem_1.05rem_1.25rem_1.25rem] border-2 border-[#9d9a95] bg-[linear-gradient(180deg,#faf8f6,#f3f0ed)] p-0 text-[1.7rem] leading-none text-[#b7b1a8] shadow-[0_0_0_0.24rem_rgba(255,255,255,0.78),0_0_1rem_rgba(255,255,255,0.46),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-6px_8px_rgba(176,169,161,0.22),0_1px_2px_rgba(0,0,0,0.14)] transition-transform active:translate-y-px max-[560px]:h-[3rem] max-[560px]:w-[3.65rem] max-[560px]:text-[1.5rem]"
     >
       <span className="inline-block -translate-y-[0.12rem]">
         {direction === "left" ? "\u2039" : "\u203a"}
