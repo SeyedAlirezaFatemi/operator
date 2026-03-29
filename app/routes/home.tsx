@@ -141,7 +141,7 @@ export default function Home() {
                 </div>
 
                 <div className="mt-5 space-y-3 pb-10">
-                  {agents.map((agent, index) => (
+                  {agents.map((agent) => (
                     <article
                       key={agent.id}
                       draggable
@@ -153,7 +153,6 @@ export default function Home() {
                       onDragEnd={() => setDraggedAgentId(null)}
                       className={clsx(
                         "cursor-grab rounded-[1.25rem] border border-[rgba(86,125,136,0.15)] bg-white/72 px-4 py-4 shadow-[0_10px_24px_rgba(121,150,160,0.12),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[transform,box-shadow,opacity] duration-200 active:cursor-grabbing",
-                        index > 0 && "max-[640px]:hidden",
                         draggedAgentId === agent.id
                           ? "scale-[1.03] -translate-y-1 opacity-60 shadow-[0_18px_30px_rgba(72,191,227,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
                           : "hover:-translate-y-0.5",

@@ -285,9 +285,22 @@ function PadStatusScreen({
 }) {
   if (!isConnected) {
     return (
-      <div className={clsx(padScreenShellClass, "bg-[linear-gradient(180deg,#111111,#040404)]")}>
+      <div
+        className={clsx(
+          padScreenShellClass,
+          "bg-[linear-gradient(180deg,#111111,#040404)] px-4 py-3 text-white max-[560px]:px-3 max-[560px]:py-2.5",
+        )}
+      >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.05)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.05)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-35" />
-        <div className="relative h-full" />
+        <div className="relative flex h-full flex-col items-center justify-center text-center font-mono">
+          <p className="text-[0.62rem] tracking-[0.24em] text-[#8f8f89] uppercase">OpenClaw offline</p>
+          <h3 className="mt-2 text-[1.1rem] leading-tight font-semibold tracking-[0.04em] text-[#f3f3ef] max-[560px]:text-[0.9rem]">
+            Connect to agents
+          </h3>
+          <p className="mt-2 max-w-[13rem] text-[0.66rem] leading-4 text-[#b6b6b0] max-[560px]:text-[0.58rem]">
+            Connect OpenClaw to load and control your agent pads.
+          </p>
+        </div>
       </div>
     );
   }
