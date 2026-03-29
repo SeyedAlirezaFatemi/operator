@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type AgentAssignment = {
   id: string;
   name: string;
@@ -22,6 +24,7 @@ function getStatusAccent(status: string) {
           "bg-[conic-gradient(from_210deg_at_50%_50%,rgba(255,255,255,0.18),rgba(126,250,178,0.72),rgba(46,181,110,0.3),rgba(255,255,255,0.18))]",
         statusText: "text-[#a6f2bf]",
         idleHint: "rgba(117,227,120,0.24)",
+        screenBorder: "border-[#52d47b]",
       };
     case "idle":
       return {
@@ -33,6 +36,7 @@ function getStatusAccent(status: string) {
           "bg-[conic-gradient(from_205deg_at_50%_50%,rgba(255,255,255,0.16),rgba(122,222,255,0.7),rgba(57,145,214,0.28),rgba(255,255,255,0.16))]",
         statusText: "text-[#9fe7f7]",
         idleHint: "rgba(87,191,220,0.24)",
+        screenBorder: "border-[#57bfdc]",
       };
     case "error":
       return {
@@ -44,6 +48,7 @@ function getStatusAccent(status: string) {
           "bg-[conic-gradient(from_210deg_at_50%_50%,rgba(255,255,255,0.16),rgba(255,164,164,0.72),rgba(203,48,48,0.3),rgba(255,255,255,0.16))]",
         statusText: "text-[#ffb8b8]",
         idleHint: "rgba(255,116,116,0.24)",
+        screenBorder: "border-[#ef6a6a]",
       };
     default:
       return {
@@ -55,13 +60,35 @@ function getStatusAccent(status: string) {
           "bg-[conic-gradient(from_220deg_at_50%_50%,rgba(255,255,255,0.14),rgba(214,221,229,0.44),rgba(131,140,151,0.18),rgba(255,255,255,0.14))]",
         statusText: "text-[#d7dce2]",
         idleHint: "rgba(255,255,255,0.2)",
+        screenBorder: "border-[#9da8b1]",
       };
+  }
+}
+
+function getAgentStatusSentence(agent: AgentStatus) {
+  if (agent.task) {
+    const normalizedTask = /^[A-Z]/.test(agent.task) ? agent.task : `${agent.task[0]?.toUpperCase() ?? ""}${agent.task.slice(1)}`;
+    return normalizedTask.endsWith(".") ? normalizedTask : `${normalizedTask}.`;
+  }
+
+  switch (agent.status) {
+    case "idle":
+      return `${agent.name} is standing by for the next task.`;
+    case "error":
+      return `${agent.name} needs attention before work can continue.`;
+    case "offline":
+      return `${agent.name} is currently offline.`;
+    default:
+      return agent.description.endsWith(".") ? agent.description : `${agent.description}.`;
   }
 }
 
 const padSlots = Array.from({ length: 9 }, (_, index) => ({
   label: `Pad slot ${index + 1}`,
 }));
+
+const padScreenShellClass =
+  "relative h-[10.5rem] w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:h-[8.8rem] max-[560px]:rounded-t-[2rem]";
 
 export function Pad({
   assignments,
@@ -84,11 +111,16 @@ export function Pad({
   isDraggingAgent?: boolean;
   draggedPadIndex?: number | null;
 }) {
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const activeCount = agents.filter((agent) => agent.status === "active").length;
   const attentionCount = agents.filter((agent) => agent.status === "error").length;
   const featuredAgents = agents
     .filter((agent) => agent.status === "error" || agent.status === "active")
     .slice(0, 2);
+  const selectedAgent =
+    assignments.find((assignment) => assignment?.id === selectedAgentId)
+      ? agents.find((agent) => agent.id === selectedAgentId) ?? null
+      : null;
 
   return (
     <section
@@ -102,6 +134,7 @@ export function Pad({
           attentionCount={attentionCount}
           gateway={gateway}
           isConnected={isConnected}
+          selectedAgent={selectedAgent}
         />
 
         <div className="mx-auto grid w-fit grid-cols-3 gap-[0.85rem] px-[1.3rem] max-[560px]:gap-[0.7rem] max-[560px]:px-[0.95rem]">
@@ -117,6 +150,17 @@ export function Pad({
               slotIndex={index}
               isDraggingPadItem={draggedPadIndex !== null}
               isDraggedPadItem={draggedPadIndex === index}
+              isSelected={selectedAgentId === assignments[index]?.id}
+              onPress={() => {
+                const nextAssignment = assignments[index];
+                if (!nextAssignment) {
+                  return;
+                }
+
+                setSelectedAgentId((currentSelectedAgentId) =>
+                  currentSelectedAgentId === nextAssignment.id ? null : nextAssignment.id,
+                );
+              }}
             />
           ))}
         </div>
@@ -146,27 +190,84 @@ function PadStatusScreen({
   attentionCount,
   gateway,
   isConnected,
+  selectedAgent,
 }: {
   agents: AgentStatus[];
   activeCount: number;
   attentionCount: number;
   gateway: string;
   isConnected: boolean;
+  selectedAgent: AgentStatus | null;
 }) {
   if (!isConnected) {
     return (
-      <div className="relative w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none bg-[linear-gradient(180deg,#111111,#040404)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:rounded-t-[2rem]">
+      <div className={[padScreenShellClass, "bg-[linear-gradient(180deg,#111111,#040404)]"].join(" ")}>
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.05)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.05)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-35" />
-        <div className="relative h-[10.5rem] max-[560px]:h-[8.8rem]" />
+        <div className="relative h-full" />
+      </div>
+    );
+  }
+
+  if (selectedAgent) {
+    const accent = getStatusAccent(selectedAgent.status);
+
+    return (
+      <div
+        className={[
+          padScreenShellClass,
+          "bg-[linear-gradient(180deg,#151515,#060606)] px-4 pt-3 pb-2.5 text-white max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2",
+        ].join(" ")}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.08)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.07)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-45" />
+        <div
+          className={[
+            "pointer-events-none absolute inset-[1px] rounded-t-[calc(2.4rem-1px)] rounded-b-none border-2 max-[560px]:rounded-t-[calc(2rem-1px)]",
+            accent.screenBorder,
+          ].join(" ")}
+        />
+        <div className="relative flex h-full flex-col justify-between">
+          <div className="flex items-start gap-3">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/10 bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.08)] max-[560px]:h-9 max-[560px]:w-9">
+              <img
+                src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=${encodeURIComponent(selectedAgent.id)}`}
+                alt=""
+                aria-hidden="true"
+                className="h-7 w-7 object-contain max-[560px]:h-6 max-[560px]:w-6"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[0.58rem] font-mono tracking-[0.24em] text-[#9a9a95] uppercase">
+                Agent View
+              </p>
+              <h3 className="mt-1 truncate font-mono text-[1.18rem] leading-none font-bold tracking-[-0.03em] text-[#f6f6f2] max-[560px]:text-[0.98rem]">
+                {selectedAgent.name}
+              </h3>
+            </div>
+          </div>
+
+          <p className="max-w-[92%] font-mono text-[0.84rem] leading-5 text-[#e7e7e2] max-[560px]:max-w-full max-[560px]:text-[0.68rem] max-[560px]:leading-4.5">
+            {getAgentStatusSentence(selectedAgent)}
+          </p>
+
+          <div className="flex items-center justify-between gap-3 border-t border-white/12 pt-2 font-mono text-[0.62rem] tracking-[0.14em] text-[#b8b8b3] uppercase max-[560px]:text-[0.55rem]">
+            <span>{selectedAgent.status}</span>
+            <span>Tap again to return home</span>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-t-[2.4rem] rounded-b-none bg-[linear-gradient(180deg,#131313,#050505)] px-4 pt-3 pb-2.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-14px_24px_rgba(255,255,255,0.03)] max-[560px]:rounded-t-[2rem] max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2">
+    <div
+      className={[
+        padScreenShellClass,
+        "bg-[linear-gradient(180deg,#131313,#050505)] px-4 pt-3 pb-2.5 text-white max-[560px]:px-3 max-[560px]:pt-2.5 max-[560px]:pb-2",
+      ].join(" ")}
+    >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_28%),linear-gradient(120deg,transparent_14%,rgba(255,255,255,0.08)_42%,transparent_58%),radial-gradient(rgba(255,255,255,0.07)_0.5px,transparent_0.7px)] bg-[length:auto,auto,4px_4px] opacity-45" />
 
-      <div className="relative">
+      <div className="relative flex h-full flex-col">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-mono text-[1.32rem] leading-none tracking-[-0.03em] text-[#f6f6f2] max-[560px]:text-[1rem]">
             Agent Status
@@ -210,7 +311,7 @@ function PadStatusScreen({
           )}
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.12)] pt-2.5 font-mono text-[0.72rem] text-[#f0eee8] max-[560px]:text-[0.66rem]">
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-[rgba(255,255,255,0.12)] pt-2.5 font-mono text-[0.72rem] text-[#f0eee8] max-[560px]:text-[0.66rem]">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-[#efb766] shadow-[0_0_10px_rgba(239,183,102,0.65)]" />
             <span>{attentionCount} need attention</span>
@@ -228,6 +329,8 @@ function PadStatusScreen({
 function PadButton({
   label,
   assignment,
+  isSelected,
+  onPress,
   onAssignAgent,
   onMoveAssignment,
   onPadDragStateChange,
@@ -238,6 +341,8 @@ function PadButton({
 }: {
   label: string;
   assignment: AgentAssignment | null;
+  isSelected: boolean;
+  onPress: () => void;
   onAssignAgent: (agentId: string) => void;
   onMoveAssignment: (fromIndex: number) => void;
   onPadDragStateChange: (slotIndex: number | null) => void;
@@ -252,6 +357,7 @@ function PadButton({
     <button
       aria-label={label}
       draggable={Boolean(assignment)}
+      onClick={onPress}
       onDragStart={(event) => {
         if (!assignment) {
           return;
@@ -289,6 +395,7 @@ function PadButton({
           ? "scale-[1.02] shadow-[0_0_0_0.24rem_rgba(255,255,255,0.72),0_0_1.35rem_rgba(87,191,220,0.22),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-10px_12px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.16)]"
           : "",
         isDraggedPadItem ? "scale-[1.04] -translate-y-1 opacity-60" : "",
+        isSelected ? "scale-[1.02]" : "",
       ].join(" ")}
     >
       {assignment ? (
@@ -318,6 +425,7 @@ function PadButton({
               : isDraggingPadItem
                 ? "border-[rgba(87,191,220,0.22)]"
               : "border-[rgba(255,255,255,0.2)]",
+          isSelected ? "opacity-100" : "",
         ].join(" ")}
       />
       {assignment ? (
